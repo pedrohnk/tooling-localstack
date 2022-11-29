@@ -1,0 +1,33 @@
+service: tooling-jest-docker-plus
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  environment:
+    LOCALSTACK_HOST: ${env:LOCALSTACK_HOST, "localhost"}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: s3:ListAllMyBuckets
+          Resource: '*'
+
+plugins:
+  - serverless-offline
+
+package:
+  individually: false
+  excludeDevDependencies: true
+  patterns:
+    - '!./**'
+    - node_modules/**
+    - src/**
+
+functions:
+  hello:
+    handler: ./src/index.handler
+    events:
+      - httpApi:
+          path: /
+          method: get
